@@ -1,0 +1,26 @@
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
+    />
+    <title>Hello, world!</title>
+  </head>
+  <body>
+    <main class="container">
+      <ul>
+        {{#each products}}
+          <li>
+            <span>Nombre: {{this.title}}</span>
+            <span>Description: {{this.description}}</span>
+            <span>Code: {{this.code}}</span>
+            <span>Stock: {{this.stock}}</span>
+            <span>Id: {{this.id}}</span>
+          </li>
+        {{/each}}
+      </ul>
+    </main>
+  </body>
+</html>

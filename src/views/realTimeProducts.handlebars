@@ -1,0 +1,135 @@
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css" />
+    <title>Hello, world!</title>
+    <style>
+        form {
+            width: 50%;
+            margin: 120px auto;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+        <ul id="productList">
+            {{#each products}}
+            <li id="producto-{{this.id}}">
+                <span>Nombre: {{this.title}}</span>
+                <span>Description: {{this.description}}</span>
+                <span>Code: {{this.code}}</span>
+                <span>Stock: {{this.stock}}</span>
+                <span>Id: {{this.id}}</span>
+                <button onclick="deleteProduct('{{this.id}}')" id="deleteProductButton">Borrar Producto</button>
+
+            </li>
+            {{/each}}
+        </ul>
+        <div>
+            Todo listo para trabajar con websockets.
+            <form id="form">
+                <label for="Title">
+                    Title
+                    <input type="text" name="Title" id="title" />
+                </label>
+                <label for="description">
+                    Description
+                    <input type="text" name="description" id="description" />
+                </label>
+                <label for="price">
+                    Price
+                    <input type="text" name="price" id="price" />
+                </label>
+                <label for="code">
+                    Code
+                    <input type="text" name="code" id="code" />
+                </label>
+                <label for="stock">
+                    Stock
+                    <input type="text" name="stock" id="stock" />
+                </label>
+                <button id="addProductButton" type="submit">CREAR PRODUCTO</button>
+            </form>
+        </div>
+    </main>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const form = document.getElementById('form');
+        const title = document.getElementById('title');
+        const description = document.getElementById('description')
+        const price = document.getElementById('price')
+        const code = document.getElementById('code')
+        const stock = document.getElementById('stock')
+        const deleteProductButton = document.getElementById('deleteProductButton')
+
+
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const product = {
+                title: title.value,
+                description: description.value,
+                price: price.value,
+                code: code.value,
+                stock: stock.value,
+                thumbnail: "*"
+            }
+            console.log("product fe: ", product)
+            fetch("http://localhost:8080/api/products/", {
+                method: "POST",
+                body: JSON.stringify(product),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+        });
+        socket.on("newProduct", (addedProduct) => {
+            console.log("Se agrego el nuevo producto", addedProduct)
+        const ul = document.getElementById("productList")
+        const titleElement = document.createElement("span")
+        const descriptionElement = document.createElement("span")
+        const priceElement = document.createElement("span")
+        const codeElement = document.createElement("span")
+        const stockElement = document.createElement("span")
+        const buttonElement = document.createElement("button")
+        titleElement.innerHTML="title: " + addedProduct.title
+        descriptionElement.innerHTML="description: " + addedProduct.description
+        priceElement.innerHTML="price: " + addedProduct.price
+        codeElement.innerHTML="code: " + addedProduct.code
+        stockElement.innerHTML="stock: " + addedProduct.stock
+        const li = document.createElement("li")
+        li.appendChild(titleElement)
+        li.appendChild(descriptionElement)
+        li.appendChild(priceElement)
+        li.appendChild(codeElement)
+        li.appendChild(stockElement)
+        li.setAttribute("id", `producto-${addedProduct.id}`)
+        buttonElement.addEventListener("click", () => {
+            deleteProduct(addedProduct.id)
+        })
+        buttonElement.innerHTML = "Borrar Producto"
+        li.appendChild(buttonElement)
+        ul.appendChild(li)
+        })
+
+        const deleteProduct = (id) =>{
+            console.log(id)
+            fetch(`http://localhost:8080/api/products/${id}`, {
+                method: "DELETE",
+            });
+        }
+
+        socket.on("deleteProduct", (productId) => {
+            const li = document.getElementById(`producto-${productId}`)
+            li.remove()
+        })
+
+    </script>
+</body>
+
+</html>

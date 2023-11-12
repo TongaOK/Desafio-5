@@ -6,7 +6,6 @@ const productManager = new ProductManager("./products.json");
 router.get("/", async (req, res) => {
   try {
     const { limit } = req.query;
-    console.log("Solicitud GET a /products recibida");
     let products = await productManager.getProducts();
     console.log(products);
 

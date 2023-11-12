@@ -7,7 +7,6 @@ router.get('/:cid', async (req, res) => {
   try {
     const cartId = req.params.cid;
     const cart = await CartModel.findById(cartId).populate("products.product");
-    console.log(cart.products);
     const products = cart.products.map(product =>  product.toJSON())
 
     if (!cart) {
@@ -50,12 +49,10 @@ router.put('/:cid', async (req, res) => {
 
   try {
     const cart = await CartModel.findById(cartId).populate("products.product");
-    console.log(cart);
     if (!cart) {
       return res.status(404).json({ error: 'Carrito no encontrado' });
     }
 
-    console.log(cart)
     cart.products = products;
     await cart.save();
 
@@ -86,7 +83,6 @@ router.put('/:cid/products/:pid', async (req, res) => {
 
     res.json({ message: 'Cantidad del producto actualizada en el carrito' });
   } catch (error) {
-    console.log(error)
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
